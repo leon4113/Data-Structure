@@ -131,7 +131,7 @@ void DeleteAt(int index){
 	delete DeletedNode;
 }
 
-//binary search
+//linear search
 Institution* linearSearch( string searchValue){
 	Institution * current = head;
 
