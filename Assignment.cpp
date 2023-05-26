@@ -146,7 +146,8 @@ Institution* linearSearch( string searchValue){
 	return current;
 }
 
-Institution* binarySearch(string searchValue){
+//bidirecional search
+Institution* bidirectionalSearch(string searchValue){
 	Institution* forwardPtr = head;
     Institution* backwardPtr = tail;
 
