@@ -131,6 +131,14 @@ void DeleteAt(int index){
 	delete DeletedNode;
 }
 
+bool registerCustomer(string username,string password, string email, string dob){
+	return NULL;
+}
+
+void displayUniversities(){
+
+}
+
 //linear search
 Institution* linearSearch( string searchValue){
 	Institution * current = head;
@@ -169,4 +177,53 @@ Institution* bidirectionalSearch(string searchValue){
 
 	//not found
 	return NULL;
+}
+
+void normalMenu(){
+	while(true){
+		int option;
+
+		cout << "1. Display universities" << endl;
+		cout << "2. sort universities" << endl;
+		cout << "3. search university details" << endl;
+		cout << "4. Resgister as customer" << endl;
+
+		cin >> option;
+
+		if (option == 1){
+			displayUniversities();
+		}
+        else if (option == 2);
+            //sort()
+        else if (option == 3){
+			string searchValue;
+			cout << "enter the university name :";
+			cin >> searchValue;
+            bidirectionalSearch(searchValue);
+		}
+        else if (option == 4){
+			string username;
+			string password;
+			string email;
+			string dob;
+
+			cout << "Userame :" << endl;
+			cin >> username;
+
+			cout << "Password :" << endl;
+			cin >> password;
+			
+			cout << "email :" << endl;
+			cin >> email;
+			
+			cout << "date of birth :" << endl;
+			cin >> dob;
+
+			bool status = registerCustomer( username, password,  email,  dob);
+
+		}
+                  
+            
+	}
+	
 }
