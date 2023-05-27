@@ -1,185 +1,22 @@
 #include <iostream>
 using namespace std;
+#include "Assignment.hpp"
 
-struct admin{
-	string username;
-	string password;
-	string email;
-	string dob;
-	admin* PrevAddress;
-	admin* NextAddress;
-};
-
-struct customer{
-	string username;
-	string password;
-	string email;
-	string dob;
-	customer* PrevAddress;
-	customer* NextAddress;
-};
-
-struct Institution{
-	int Rank;
-	string Name;
-	string LocationCode;
-	string Location;
-	double ArScore;
-	string ArRank;
-	double ErScore;
-	string ErRank;
-	double FsrScore;
-	string FsrRank;
-	double CpfScore;
-	string CpfRank;
-	double IfrScore;
-	string IfrRank;
-	double IsrScore;
-	string IsrRank;
-	double IrnScore;
-	string IrnRank;
-	double GerScore;
-	string GerRank;
-	double ScoreScaled;
-	Institution* PrevAddress;
-	Institution* NextAddress;
-}*head, *tail;
-
-Institution* CreateNewNode(int rank, string Name, string LocationCOde, string Location, double ArScore, string ArRank, double ErScore, string ErRank,
-double FsrScore, string FsrRank, double CpfScore, string CpfRank, double IfrScore, string IfrRank, double IsrScore, string IsrRank,
-double IrnScore, string IrnRank, double GerScore, string GerRank, double ScoreScaled){
-	Institution* newnode = new Institution;
-	newnode -> Rank = rank;
-	newnode -> Name = Name;
-	newnode -> LocationCode = LocationCOde;
-	newnode -> Location = Location;
-	newnode -> ArScore = ArScore;
-	newnode -> ArRank = ArRank;
-	newnode -> ErScore = ErScore;
-	newnode -> ErRank = ErRank;
-	newnode -> FsrScore = FsrScore;
-	newnode -> FsrRank = FsrRank;
-	newnode -> CpfScore = CpfScore;
-	newnode -> CpfRank = CpfRank;
-	newnode -> IfrScore = IfrScore;
-	newnode -> IfrRank = IfrRank;
-	newnode -> IsrScore = IsrScore;
-	newnode -> IsrRank = IsrRank;
-	newnode -> IrnScore = IrnScore;
-	newnode -> IrnRank = IrnRank;
-	newnode -> GerScore = GerScore;
-	newnode -> GerRank = GerRank;
-	newnode -> ScoreScaled = ScoreScaled;
-	newnode -> PrevAddress = NULL;
-	newnode -> NextAddress = NULL;
-	
-	return newnode;
-}
-
-void InsertIntoEndofList(Institution* newnode){
-	if (head == NULL)
-	{
-		head = tail = newnode;
+void login(const string& username, const string& password) {
+    if(username == "admnin" && password == "admin"){
+        //adminMenu();    
 	}
-	else
-	{
-		newnode -> PrevAddress = tail;
-		tail -> NextAddress = newnode;
-		tail = newnode;
-	}	
-}
-
-void InsertIntoStartofList(Institution* newnode){
-	if (head == NULL)
-	{
-		head = tail = newnode;
-	}
-	else
-	{
-		newnode -> NextAddress = head;
-		head -> PrevAddress = newnode;
-		head = newnode;
-	}	
-}
-
-void DeleteStartofList(){
-	Institution* temp = head;
-	if(temp -> NextAddress != NULL)
-		head = head -> NextAddress;
-	delete temp;
-}
-
-void DeleteEndofList(){
-	Institution* temp = tail;
-
-	if(temp-> PrevAddress != NULL)
-		tail = tail -> PrevAddress;
-	delete temp;
-}
-
-//Head counts as index 1
-void DeleteAt(int index){
-	Institution* temp = head;
-	for(int i=1;i<index-1;i++){
-		temp = temp -> NextAddress;
-	}
-	Institution* DeletedNode = temp -> NextAddress;
-	temp -> NextAddress = DeletedNode -> NextAddress;
-	temp = temp -> NextAddress -> NextAddress;
-	temp -> PrevAddress = DeletedNode -> PrevAddress;
-	
-	delete DeletedNode;
-}
-
-bool registerCustomer(string username,string password, string email, string dob){
-	return NULL;
-}
-
-void displayUniversities(){
-
-}
-
-//linear search
-Institution* linearSearch( string searchValue){
-	Institution * current = head;
-
-	while(current->Name != searchValue && current->NextAddress != NULL){
-		current = current-> NextAddress;
-	}
-
-	if(current->Name != searchValue){
-		return NULL;
-	}
-
-	return current;
-}
-
-//bidirecional search
-Institution* bidirectionalSearch(string searchValue){
-	Institution* forwardPtr = head;
-    Institution* backwardPtr = tail;
-
-	while(forwardPtr != NULL && backwardPtr != NULL && 
-	forwardPtr != backwardPtr && forwardPtr->PrevAddress != backwardPtr){
-		// Check if forward pointer has reached the target
-		if (forwardPtr->Name == searchValue) {
-            return forwardPtr;
+    user* current = usHead;
+    while (current != nullptr) {
+        if (username == current->username && password == current->password) {
+            customerMenu();
         }
-
-        // Check if backward pointer has reached the target
-        if (backwardPtr->Name == searchValue) {
-            return backwardPtr;
-        }
-
-        forwardPtr = forwardPtr->NextAddress;
-        backwardPtr = backwardPtr->PrevAddress;
-	}
-
-	//not found
-	return NULL;
+        current = current->NextAddress;
+    }
+    cout << "Incorrect username or password"<<endl;
 }
 
-void normalMenu(){
+int main(){
 	while(true){
 		int option;
 
@@ -187,7 +24,9 @@ void normalMenu(){
 		cout << "2. sort universities" << endl;
 		cout << "3. search university details" << endl;
 		cout << "4. Resgister as customer" << endl;
+		cout << "5. Login" << endl << endl;
 
+		cout << "choose a function :" << endl;
 		cin >> option;
 
 		if (option == 1){
@@ -205,7 +44,7 @@ void normalMenu(){
 			string username;
 			string password;
 			string email;
-			string dob;
+			string address;
 
 			cout << "Userame :" << endl;
 			cin >> username;
@@ -217,13 +56,17 @@ void normalMenu(){
 			cin >> email;
 			
 			cout << "date of birth :" << endl;
-			cin >> dob;
+			cin >> address;
 
-			bool status = registerCustomer( username, password,  email,  dob);
-
+			user* usernode = createNewUserNode(username, password, email, address);
+			InsertIntoStartofUserList (usernode);
+			break;a
+		}   
+		else if(option == 5){
+			//login();
 		}
-                  
-            
+		else{
+			cout<<"please enter from the option above!" <<endl <<endl;
+		}
 	}
-	
 }
