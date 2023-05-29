@@ -261,7 +261,7 @@ void AdmFeedback(Ticket ticket){
 void CusFeedback(string Name, Ticket ticket){
 	cout << "Customer Feedback Menu\n" << endl;
 	int choice = 0;
-	while (choice!=0){
+	while (choice!=5){
 		cout << "What would you like to do?" << endl;
 		cout << "1. Select a ticket" << endl;
 		cout << "2. Show all tickets" << endl;
@@ -291,6 +291,7 @@ void CusFeedback(string Name, Ticket ticket){
 		else if (choice == 4) {
 		    string Institution, Query;
 		    cout << "Insert institution name: ";
+		    cin.ignore();
 		    getline(cin, Institution);
 		    cout << "Insert your query: ";
 		    getline(cin, Query);
@@ -312,7 +313,7 @@ int main() {
     tickets.CreateNewTicket("Jane", "ABC College", "How do I reset my password?");
     tickets.CreateNewTicket("Mike", "DEF Institute", "I am unable to access my course material");
 	
-	AdmFeedback(tickets);
+	CusFeedback("John", tickets);
 
     return 0;
 }
