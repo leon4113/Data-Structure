@@ -1,6 +1,10 @@
 #include <iostream>
-using namespace std;
+#include <chrono>
+#include <fstream>
+#include <sstream>
 
+using namespace std;
+using namespace std::chrono;
 
 struct user{
 	string username;
@@ -228,4 +232,57 @@ void customerMenu(){
 
 void registerUser(string username, string password, string email, string address) {
     
+}
+
+Institution* partition(Institution* head, Institution* tail) {
+    string pivot = tail->Name;
+    Institution* i = head->PrevAddress;
+
+    for (Institution* j = head; j != tail; j = j->NextAddress) {
+        if (j->Name <= pivot) {
+            i = (i == nullptr) ? head : i->NextAddress;
+            swap(i->Name, j->Name);
+        }
+    }
+
+    i = (i == nullptr) ? head : i->NextAddress;
+    swap(i->Name, tail->Name);
+    return i;
+}
+
+void quicksort(Institution* head, Institution* tail) {
+    if (tail != nullptr && head != tail && head != tail->NextAddress) {
+        Institution* pivot = partition(head, tail);
+
+        quicksort(head, pivot->PrevAddress);
+        quicksort(pivot->NextAddress, tail);
+    }
+}
+
+void quicksortUniversities() {
+    // Count the number of institutions
+    int count = 0;
+    Institution* current = head;
+    while (current != nullptr) {
+        count++;
+        current = current->NextAddress;
+    }
+
+    // Start timer
+    auto start = high_resolution_clock::now();
+    // Sort the linked list using QuickSort algorithm
+    quicksort(head, tail);
+    // Stop timer
+    auto stop = high_resolution_clock::now();
+    auto duration = duration_cast<microseconds>(stop - start);
+
+    cout << "Time taken by QuickSort: " << duration.count() << " microseconds" << endl;
+
+    // Reassign the head and tail pointers after sorting
+    current = head;
+    while (current->NextAddress != nullptr) {
+        current->NextAddress->PrevAddress = current;
+        current = current->NextAddress;
+    }
+    tail = current;
 }
