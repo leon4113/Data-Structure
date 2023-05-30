@@ -1,0 +1,4 @@
+ID,Name,Institution,Query,Reply,Resolution
+T1,John,XYZ University,I need assistance,,Unresolved
+T2,Jane,ABC College,How do I reset my password,,Unresolved
+T3,Mike,Def Institute,I am unable to access this uni,Try reloggin,Unresolved
