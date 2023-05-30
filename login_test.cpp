@@ -18,7 +18,7 @@ private:
     User* head;
 
 public:
-    UserList() : head(nullptr) {} 
+    UserList(){} 
 
     ~UserList() { 
         User* current = head;
@@ -55,7 +55,7 @@ public:
 };
 
 int main() {
-    UserList userList;
+    UserList userList; 
 
     ifstream file("admin_credentials.txt");
     if (!file) {
@@ -65,10 +65,10 @@ int main() {
 
     string line;
     while (getline(file, line)) {
-        istringstream iss(line);
+        istringstream iss(line); //this is for splitting the line into tokens
         string username, password;
         if (getline(iss, username, ';') && getline(iss, password, ';')) {
-            userList.addUser(username, password);
+            userList.addUser(username, password); 
         }
     }
 

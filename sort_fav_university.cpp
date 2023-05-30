@@ -1,6 +1,6 @@
 #include <iostream>
 #include <fstream>
-#include <algorithm>
+#include <algorithm> 
 using namespace std;
 
 // Structure to store university data
@@ -15,6 +15,36 @@ struct University {
 // Function to compare universities based on the number of students
 bool compareUniversities(const University& u1, const University& u2) {
     return u1.students > u2.students; // Sort in descending order
+}
+
+// Function to perform quicksort
+void quicksort(University* arr, int left, int right) {
+    if (left >= right) {
+        return;
+    }
+    
+    int pivot = arr[(left + right) / 2].students;
+    int i = left;
+    int j = right;
+    
+    while (i <= j) {
+        while (arr[i].students > pivot) {
+            i++;
+        }
+        
+        while (arr[j].students < pivot) {
+            j--;
+        }
+        
+        if (i <= j) {
+            swap(arr[i], arr[j]);
+            i++;
+            j--;
+        }
+    }
+    
+    quicksort(arr, left, j);
+    quicksort(arr, i, right);
 }
 
 int main() {
@@ -40,8 +70,8 @@ int main() {
 
     inputFile.close();
 
-    // Sort the universities based on the number of students
-    sort(universities, universities + index, compareUniversities);
+    // Sort the universities based on the number of students using quicksort
+    quicksort(universities, 0, index - 1);
 
     // Print the sorted universities
     cout << "Top 10 Universities:" << endl;
