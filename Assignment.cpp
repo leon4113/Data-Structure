@@ -60,7 +60,7 @@ int main(){
 
 			user* usernode = createNewUserNode(username, password, email, address);
 			InsertIntoStartofUserList (usernode);
-			break;a
+			break;
 		}   
 		else if(option == 5){
 			//login();
