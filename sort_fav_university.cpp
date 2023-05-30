@@ -47,11 +47,11 @@ void quicksort(University* arr, int left, int right) {
     quicksort(arr, i, right);
 }
 
-int main() {
+void summarize() {
     ifstream inputFile("favorites_uni.txt");
     if (!inputFile) {
         cout << "Failed to open file." << endl;
-        return 1;
+        return;
     }
 
     const int size = 1400;
@@ -81,6 +81,4 @@ int main() {
         count++;
         if (count >= 10) break;
     }
-
-    return 0;
 }
