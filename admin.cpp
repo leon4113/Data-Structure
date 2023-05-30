@@ -2,199 +2,360 @@
 #include <fstream>
 #include <sstream>
 #include <string>
-#include <chrono>
-#include <ctime>
 
 using namespace std;
-using namespace std::chrono;
 
-struct UserNode {
+struct User {
     string username;
     string password;
     string email;
-    time_point<system_clock> lastLoginDate; // Last login time
-    UserNode* next;
+    User* next;
+
+    User(const string& uname, const string& pwd, const string& mail)
+        : username(uname), password(pwd), email(mail), next(nullptr) {}
 };
 
-class UserList {
-public:
-    UserNode* head;
+struct Ticket {
+    string id;
+    string name;
+    string institution;
+    string query;
+    string reply;
+    string resolution;
+    Ticket* next;
 
-    UserList() {
-        head = nullptr;
-    }
-
-    // Function to add a user to the linked list
-    void AddUser(const string& username, const string& password, const string& email, const time_point<system_clock>& lastLoginDate) {
-        UserNode* newNode = new UserNode;
-        newNode->username = username;
-        newNode->password = password;
-        newNode->email = email;
-        newNode->lastLoginDate = lastLoginDate;
-        newNode->next = nullptr;
-
-        if (head == nullptr) {
-            head = newNode;
-        }
-        else {
-            UserNode* temp = head;
-            while (temp->next != nullptr) {
-                temp = temp->next;
-            }
-            temp->next = newNode;
-        }
-    }
-
-    // Function to display all users in the linked list
-    void DisplayUsers() {
-        if (head == nullptr) {
-            cout << "No users found in the list." << endl;
-        }
-        else {
-            UserNode* temp = head;
-            while (temp != nullptr) {
-                cout << "Username: " << temp->username << endl;
-                cout << "Password: " << temp->password << endl;
-                cout << "Email: " << temp->email << endl;
-                //cout << "Last Login Date: " << system_clock::to_time_t(temp->lastLoginDate) << endl;
-                cout << endl;
-                temp = temp->next;
-            }
-        }
-    }
-
-    // Function to delete inactive accounts based on inactivity threshold
-    void DeleteInactiveAccounts(int inactiveThreshold) {
-        UserNode* temp = head;
-        UserNode* prev = nullptr;
-        time_point<system_clock> currentTime = system_clock::now();
-
-        while (temp != nullptr) {
-            // Calculate the duration between the current time and the last login date
-            auto duration = duration_cast<seconds>(currentTime - temp->lastLoginDate); 
-
-            // Check if the duration is greater than the specified inactivity threshold (30 days)
-            if (duration.count() > inactiveThreshold) {
-                // Delete the inactive account
-                if (prev == nullptr) {
-                    // The inactive account is the head of the linked list
-                    head = temp->next;
-                    delete temp;
-                    temp = head;
-                }
-                else {
-                    // The inactive account is not the head
-                    prev->next = temp->next;
-                    delete temp;
-                    temp = prev->next;
-                }
-            }
-            else {
-                // Move to the next node
-                prev = temp;
-                temp = temp->next;
-            }
-        }
-    }
+    Ticket(const string& ticketId, const string& ticketName, const string& ticketInstitution,
+        const string& ticketQuery, const string& ticketReply, const string& ticketResolution)
+        : id(ticketId), name(ticketName), institution(ticketInstitution), query(ticketQuery),
+        reply(ticketReply), resolution(ticketResolution), next(nullptr) {}
 };
 
-void ReadUsersFromFile(UserList& userList, const string& fileName) {
-    ifstream file(fileName);
-    if (file.is_open()) {
+// Function to display the user data in the linked list
+void displayUsers(const User* head) {
+    const User* current = head;
+    while (current != nullptr) {
+        cout << "Username: " << current->username << endl;
+        cout << "Password: " << current->password << endl;
+        cout << "Email: " << current->email << endl;
+        cout << endl;
+        current = current->next;
+    }
+}
+
+// Function to insert a new user at the end of the linked list
+void insertUser(User*& head, const string& uname, const string& pwd, const string& mail) {
+    User* newUser = new User(uname, pwd, mail);
+    if (head == nullptr) {
+        head = newUser;
+    }
+    else {
+        User* current = head;
+        while (current->next != nullptr) {
+            current = current->next;
+        }
+        current->next = newUser;
+    }
+}
+
+// Function to read user data from a file and create the linked list
+void readUsersFromFile(User*& head, const string& filename) {
+    ifstream inputFile(filename);
+    if (inputFile) {
         string line;
-        while (getline(file, line)) {
-            stringstream ss(line);
-            string username, password, email, lastLoginDateStr;
-            if (getline(ss, username, ',') && getline(ss, password, ',') && getline(ss, email, ',') && getline(ss, lastLoginDateStr)) {
-                time_t lastLoginTime = stoi(lastLoginDateStr);
-                time_point<system_clock> lastLoginDate = system_clock::from_time_t(lastLoginTime);
-                userList.AddUser(username, password, email, lastLoginDate);
-            }
+        while (getline(inputFile, line)) {
+            istringstream iss(line);
+            string username, password, email;
+            getline(iss, username, ',');
+            getline(iss, password, ',');
+            getline(iss, email, ',');
+            insertUser(head, username, password, email);
+        }
+        inputFile.close();
+    }
+    else {
+        cout << "Failed to open file. Creating a new file." << endl;
+    }
+}
+
+void writeUsersToFile(User* head, const string& fileName) {
+    ofstream file(fileName);
+
+    if (file.is_open()) {
+        User* temp = head;
+        while (temp != nullptr) {
+            file << temp->username << ", " << temp->password << ", " << temp->email << ", " << "\n";
+            temp = temp->next;
         }
         file.close();
-        cout << "Users successfully loaded from file!" << endl;
+        cout << "Users successfully written to file!" << endl;
     }
     else {
         cout << "Error opening file: " << fileName << endl;
     }
 }
 
-void WriteUsersToFile(UserList& userList, const string& fileName) {
-    ofstream file(fileName, ios::app);
-
-    if (file.is_open()) {
-        UserNode* temp = userList.head;
-        while (temp != nullptr) {
-            file << temp->username << ", " << temp->password << ", " << temp->email << ", " << system_clock::to_time_t(temp->lastLoginDate) << "\n";
-            temp = temp->next;
+// Function to save the user data to a file
+void saveUsersToFile(const User* head, const string& filename) {
+    ofstream outputFile(filename);
+    if (outputFile) {
+        const User* current = head;
+        while (current != nullptr) {
+            outputFile << current->username << ", " << current->password << ", " << current->email << endl;
+            current = current->next;
         }
-        file.close();
-        cout << "Users successfully written to file!" << endl;
-    } else {
-        cout << "Error opening file: " << fileName << endl;
+        outputFile.close();
+        cout << "User data saved to file." << endl;
+    }
+    else {
+        cout << "Failed to open file." << endl;
     }
 }
 
-void Menu(UserList& userList, const string& fileName) {
+// Function to modify a user's data in the linked list based on user input
+bool modifyUser(User* head, const string& uname) {
+    User* current = head;
+    while (current != nullptr) {
+        if (current->username == uname) {
+            string newPwd, newEmail;
+            cout << "Enter new password: ";
+            cin.ignore(); // Ignore the newline character from previous input
+            getline(cin, newPwd);
+            cout << "Enter new email: ";
+            getline(cin, newEmail);
+            current->password = newPwd;
+            current->email = newEmail;
+            return true; // User found and modified
+        }
+        current = current->next;
+    }
+    return false; // User not found
+}
+
+// Function to provide the option to modify a user's data
+void modifyUserOption(User* head) {
+    string usernameToModify;
+    cout << "Enter username to modify: ";
+    getline(cin, usernameToModify);
+    if (modifyUser(head, usernameToModify)) {
+        cout << "User '" << usernameToModify << "' modified successfully." << endl;
+    }
+    else {
+        cout << "User '" << usernameToModify << "' not found." << endl;
+    }
+}
+
+// Function to delete a user's data from the linked list and remove the corresponding line from the file
+bool deleteUser(User*& head, const string& uname, const string& filename) {
+    User* current = head;
+    User* prev = nullptr;
+
+    while (current != nullptr) {
+        if (current->username == uname) {
+            if (prev != nullptr) {
+                prev->next = current->next;
+            }
+            else {
+                head = current->next;
+            }
+            delete current;
+
+            // Update the file by rewriting the remaining user data
+            ofstream outputFile(filename);
+            if (outputFile) {
+                current = head;
+                while (current != nullptr) {
+                    outputFile << current->username << ", " << current->password << ", " << current->email << endl;
+                    current = current->next;
+                }
+                outputFile.close();
+                return true; // User found and deleted
+            }
+            else {
+                cout << "Failed to open file." << endl;
+            }
+            break;
+        }
+        prev = current;
+        current = current->next;
+    }
+    return false; // User not found
+}
+
+// Function to provide the option to delete a user's data
+void deleteUserOption(User*& head, const string& filename) {
+    string usernameToDelete;
+    cout << "Enter username to delete: ";
+    getline(cin, usernameToDelete);
+    if (deleteUser(head, usernameToDelete, filename)) {
+        cout << "User '" << usernameToDelete << "' deleted successfully." << endl;
+    }
+    else {
+        cout << "User '" << usernameToDelete << "' not found." << endl;
+    }
+}
+
+// Function to display ticket data
+void displayTickets(const Ticket* head) {
+    const Ticket* current = head;
+    while (current != nullptr) {
+        cout << "ID: " << current->id << endl;
+        cout << "Name: " << current->name << endl;
+        cout << "Institution: " << current->institution << endl;
+        cout << "Query: " << current->query << endl;
+        cout << "Reply: " << current->reply << endl;
+        cout << "Resolution: " << current->resolution << endl;
+        cout << endl;
+        current = current->next;
+    }
+}
+
+// Function to insert a new ticket at the end of the linked list
+void insertTicket(Ticket*& head, const string& ticketId, const string& ticketName, const string& ticketInstitution,
+    const string& ticketQuery, const string& ticketReply, const string& ticketResolution) {
+    Ticket* newTicket = new Ticket(ticketId, ticketName, ticketInstitution, ticketQuery, ticketReply, ticketResolution);
+    if (head == nullptr) {
+        head = newTicket;
+    }
+    else {
+        Ticket* current = head;
+        while (current->next != nullptr) {
+            current = current->next;
+        }
+        current->next = newTicket;
+    }
+}
+
+// Function to read ticket data from a file and create the linked list
+void readTicketsFromFile(Ticket*& head, const string& filename) {
+    ifstream inputFile(filename);
+    if (inputFile) {
+        string line;
+        getline(inputFile, line);  // Read and discard the header line
+
+        while (getline(inputFile, line)) { 
+            istringstream iss(line);
+            string ticketId, ticketName, ticketInstitution, ticketQuery, ticketReply, ticketResolution;
+            getline(iss, ticketId, ','); 
+            getline(iss, ticketName, ',');
+            getline(iss, ticketInstitution, ',');
+            getline(iss, ticketQuery, ',');
+            getline(iss, ticketReply, ',');
+            getline(iss, ticketResolution, ',');
+            insertTicket(head, ticketId, ticketName, ticketInstitution, ticketQuery, ticketReply, ticketResolution);
+        }
+        inputFile.close();
+    }
+    else {
+        cout << "Failed to open file. Creating a new file." << endl;
+    }
+}
+
+
+// Function to save the ticket data to a file
+void saveTicketsToFile(const Ticket* head, const string& filename) {
+    ofstream outputFile(filename);
+    if (outputFile) {
+        const Ticket* current = head;
+        while (current != nullptr) {
+            outputFile << current->id << ", " << current->name << ", " << current->institution << ", "
+                << current->query << ", " << current->reply << ", " << current->resolution << endl;
+            current = current->next;
+        }
+        outputFile.close();
+        cout << "Ticket data saved to file." << endl;
+    }
+    else {
+        cout << "Failed to open file." << endl;
+    }
+}
+
+// Function to reply to a user's feedback
+bool replyToTicket(Ticket* head, const string& ticketId, const string& reply) {
+    Ticket* current = head;
+    while (current != nullptr) {
+        if (current->id == ticketId) {
+            current->reply = reply;
+            return true; // Ticket found and replied
+        }
+        current = current->next;
+    }
+    return false; // Ticket not found
+}
+
+// Function to provide the option to reply to a user's feedback
+void replyToTicketOption(Ticket* head) {
+    string ticketId, reply;
+    cout << "Enter ticket ID to reply: ";
+    getline(cin, ticketId);
+    cout << "Enter reply: ";
+    getline(cin, reply);
+    if (replyToTicket(head, ticketId, reply)) {
+        cout << "Reply added to ticket '" << ticketId << "' successfully." << endl;
+    }
+    else {
+        cout << "Ticket '" << ticketId << "' not found." << endl;
+    }
+}
+void Admin_menu() {
+    User* head = nullptr;
+    Ticket* ticketHead = nullptr;
+    string userFileName = "users.txt";
+    string ticketFileName = "Tickets.txt";
+    readUsersFromFile(head, userFileName);
+    readTicketsFromFile(ticketHead, ticketFileName);
+
     int choice;
+    string userInput;
     string username, password, email;
-    time_point<system_clock> lastLoginDate;
 
     do {
         cout << "1. Display Users" << endl;
-        cout << "2. Add User" << endl;
-        cout << "3. Delete Inactive Accounts" << endl;
-        cout << "4. Write Users to File" << endl;
+        cout << "2. Modify User's Details" << endl;
+        cout << "3. Delete user's Accounts" << endl;
+        cout << "4. Reply User's Feedback" << endl;
         cout << "5. Exit" << endl;
         cout << "Enter your choice: ";
         cin >> choice;
+        cin.ignore(); // Ignore the newline character from previous input
 
         switch (choice) {
         case 1:
-            userList.DisplayUsers();
-            break;
+            displayUsers(head);
+            break; // Add a break statement here
+
         case 2:
-            cout << "Enter username: ";
-            cin.ignore(); // Ignore the newline character in the input stream
-            getline(cin, username);
-            cout << "Enter password: ";
-            getline(cin, password);
-            cout << "Enter email: ";
-            getline(cin, email);
-            // Set the last login date to the current time
-            lastLoginDate = system_clock::now();
-            userList.AddUser(username, password, email, lastLoginDate);
-            cout << "User added successfully!" << endl;
+            modifyUserOption(head);
+            saveUsersToFile(head, "users.txt");
             break;
+
         case 3:
-            int inactiveThreshold;
-            cout << "Enter the inactivity threshold (in days): ";
-            cin >> inactiveThreshold;
-            userList.DeleteInactiveAccounts(inactiveThreshold);
-            cout << "Inactive accounts deleted." << endl;
-            break;
+            deleteUserOption(head, "users.txt");
+            break; // Add a break statement here
+
         case 4:
-            WriteUsersToFile(userList, fileName);
+            displayTickets(ticketHead);
+            replyToTicketOption(ticketHead);
+            saveTicketsToFile(ticketHead, "tickets.txt");
             break;
         case 5:
             cout << "Exiting..." << endl;
             break;
+
         default:
             cout << "Invalid choice. Please try again." << endl;
         }
         cout << endl;
     } while (choice != 5);
+    // Cleanup: free memory
+    User* current = head;
+    while (current != nullptr) {
+        User* temp = current;
+        current = current->next;
+        delete temp;
+    }
 }
 
 int main() {
-    UserList userList;
-
-    string filename = "users.txt";
-    int inactiveThreshold = 2592000;
-
-    ReadUsersFromFile(userList, "users.txt");
-
-    Menu(userList, filename);
-
+    Admin_menu();
     return 0;
 }
