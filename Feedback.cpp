@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <fstream>
 #include <sstream>
 
 using namespace std;
@@ -12,6 +13,28 @@ struct TicketNode {
 	string Reply;
 	bool Resolved;
 	TicketNode* next;
+	
+	TicketNode(){
+		this->ID = "";
+		this->Author = "";
+		this->Institution = "";
+		this->Query = "";
+		this->Reply = "";
+		this->Resolved = false;
+		this->next = NULL;
+	}
+	TicketNode(string ID, string Author, string Institution, string Query, string Reply, string Resolved){
+		this->ID = ID;
+		this->Author = Author;
+		this->Institution = Institution;
+		this->Query = Query;
+		this->Reply = Reply;
+		if(Resolved=="Resolved")
+			this->Resolved = true;
+		else
+			this->Resolved = false;
+		this->next = NULL;
+	}
 };
 
 class Ticket {
@@ -23,8 +46,20 @@ public:
 	}	
 	
 	//Ticket edit functions
+	void AddTicket(TicketNode* node){
+		if(head == NULL){
+			head = node;
+		}
+		else{
+			TicketNode* temp = head;
+			while(temp->next != NULL){
+				temp = temp->next;
+			}
+			temp->next = node;
+		}
+	}
 	void CreateNewTicket(string Author, string Institution, string Query){
-		TicketNode* newNode = new TicketNode;
+		TicketNode* newNode = new TicketNode();
 		newNode->Author = Author;
 		newNode->Institution = Institution;
 		newNode->Query = Query;
@@ -116,6 +151,41 @@ public:
 		    }
 		}
 		cout << endl;
+	}
+	
+	//Ticket File Reading
+	void ReadFromFile(){
+		ifstream file ("Tickets.txt");
+		bool header = true;
+		string dump;
+		string ID;
+		string Author;
+		string Institution;
+		string Query;
+		string Reply;
+		string Resolved;
+		
+		while(file.good()){
+			if(header){
+				getline(file, dump, '\n');
+			}
+			else{
+				getline(file, ID, ',');
+				getline(file, Author, ',');
+				getline(file, Institution, ',');
+				getline(file, Query, ',');
+				getline(file, Reply, ',');
+				getline(file, Resolved,  '\n');
+				
+				if(ID == "")
+					break;
+					
+				TicketNode* node = new TicketNode(ID,Author, Institution, Query, Reply, Resolved);
+				AddTicket(node);
+			}
+			header = false;
+		}
+		file.close();
 	}
 	
 	//Ticket display functions
@@ -309,10 +379,10 @@ void CusFeedback(string Name, Ticket ticket){
 
 int main() {
     Ticket tickets;
-    tickets.CreateNewTicket("John", "XYZ University", "I need assistance with my account");
-    tickets.CreateNewTicket("Jane", "ABC College", "How do I reset my password?");
-    tickets.CreateNewTicket("Mike", "DEF Institute", "I am unable to access my course material");
-	
+//    tickets.CreateNewTicket("John", "XYZ University", "I need assistance with my account");
+//    tickets.CreateNewTicket("Jane", "ABC College", "How do I reset my password?");
+//    tickets.CreateNewTicket("Mike", "DEF Institute", "I am unable to access my course material");
+	tickets.ReadFromFile();
 	CusFeedback("John", tickets);
 
     return 0;
