@@ -33,8 +33,19 @@ int main(){
 		if (option == 1){
 			displayUniversities();
 		}
-        else if (option == 2);
-            //sort()
+        else if (option == 2){
+			// int input;
+			// cout << "1. merge sort" << endl;
+			// cout << "2. Quick sort" << endl;
+			// cout << "choose a function :" << endl;
+			// cin >> input;
+			// if(input == 1)
+			// 	sortUniversitiesMergeSort();
+			// else if(input == 2)
+			// 	sortUniversitiesQuickSort();
+			// else
+			// 	cout << "please enter from the option above!" << endl << endl;
+		}
         else if (option == 3){
 			string searchValue;
 			cout << "enter the university name :";
