@@ -1,10 +1,11 @@
 #include <iostream>
 using namespace std;
 #include "Assignment.hpp"
+#include "admin.hpp"
 
 void login(const string& username, const string& password) {
-    if(username == "admnin" && password == "admin"){
-        //adminMenu();    
+    if(username == "admin" && password == "admin"){
+        Admin_menu();    
 	}
     user* current = usHead;
     while (current != nullptr) {
@@ -63,7 +64,14 @@ int main(){
 			break;
 		}   
 		else if(option == 5){
-			//login();
+			string username;
+			string password;
+			cout << "Username :" << endl;
+			cin >> username;
+			cout << "Password :" << endl;
+			cin >> password;
+			login(username, password);
+			
 		}
 		else{
 			cout<<"please enter from the option above!" <<endl <<endl;
