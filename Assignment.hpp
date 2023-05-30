@@ -3,6 +3,7 @@
 #include <fstream>
 #include <sstream>
 
+
 using namespace std;
 using namespace std::chrono;
 
@@ -149,6 +150,71 @@ void DeleteAt(int index){
 }
 
 
+void addDataFromCSV(const string& filename) {
+    ifstream file(filename);
+    if (!file.is_open()) {
+        cout << "Error opening file: " << filename << endl;
+        return;
+    }
+
+    string line;
+    getline(file, line);  // Read and discard the header line
+
+    while (getline(file, line)) {
+        stringstream ss(line);
+        string token;
+
+        // Read the CSV values
+        int rank;
+        string name, locationCode, location;
+        double arScore, erScore, fsrScore, cpfScore, ifrScore, isrScore, irnScore, gerScore, scoreScaled;
+        string arRank, erRank, fsrRank, cpfRank, ifrRank, isrRank, irnRank, gerRank;
+
+        getline(ss, token, ',');
+        rank = stoi(token);
+        getline(ss, name, ',');
+        getline(ss, locationCode, ',');
+        getline(ss, location, ',');
+        getline(ss, token, ',');
+        arScore = stod(token);
+        getline(ss, arRank, ',');
+        getline(ss, token, ',');
+        erScore = stod(token);
+        getline(ss, erRank, ',');
+        getline(ss, token, ',');
+        fsrScore = stod(token);
+        getline(ss, fsrRank, ',');
+        getline(ss, token, ',');
+        cpfScore = stod(token);
+        getline(ss, cpfRank, ',');
+        getline(ss, token, ',');
+        ifrScore = stod(token);
+        getline(ss, ifrRank, ',');
+        getline(ss, token, ',');
+        isrScore = stod(token);
+        getline(ss, isrRank, ',');
+        getline(ss, token, ',');
+        irnScore = stod(token);
+        getline(ss, irnRank, ',');
+        getline(ss, token, ',');
+        gerScore = stod(token);
+        getline(ss, gerRank, ',');
+        getline(ss, token);
+        scoreScaled = stod(token);
+
+        // Create a new node with the read values
+        Institution* newNode = CreateNewNode(rank, name, locationCode, location, arScore, arRank, erScore, erRank,
+            fsrScore, fsrRank, cpfScore, cpfRank, ifrScore, ifrRank, isrScore, isrRank,
+            irnScore, irnRank, gerScore, gerRank, scoreScaled);
+
+        // Insert the new node into the doubly linked list
+        InsertIntoEndofList(newNode);
+    }
+
+    file.close();
+}
+
+
 void displayUniversities(){
 
 }
@@ -279,6 +345,94 @@ void quicksortUniversities() {
     cout << "Time taken by QuickSort: " << duration.count() << " microseconds" << endl;
 
     // Reassign the head and tail pointers after sorting
+    current = head;
+    while (current->NextAddress != nullptr) {
+        current->NextAddress->PrevAddress = current;
+        current = current->NextAddress;
+    }
+    tail = current;
+}
+
+
+Institution* merge(Institution* head1, Institution* head2) {
+    if (head1 == nullptr) {
+        return head2;
+    }
+    if (head2 == nullptr) {
+        return head1;
+    }
+
+    Institution* result;
+    if (head1->Name <= head2->Name) {
+        result = head1;
+        result->NextAddress = merge(head1->NextAddress, head2);
+        result->NextAddress->PrevAddress = result;
+    } else {
+        result = head2;
+        result->NextAddress = merge(head1, head2->NextAddress);
+        result->NextAddress->PrevAddress = result;
+    }
+
+    return result;
+}
+
+void splitList(Institution* head, Institution** front, Institution** back) {
+    Institution* slow = head;
+    Institution* fast = head->NextAddress;
+
+    while (fast != nullptr) {
+        fast = fast->NextAddress;
+        if (fast != nullptr) {
+            slow = slow->NextAddress;
+            fast = fast->NextAddress;
+        }
+    }
+
+    *front = head;
+    *back = slow->NextAddress;
+    slow->NextAddress = nullptr;
+    if (*back != nullptr) {
+        (*back)->PrevAddress = nullptr;
+    }
+}
+
+void mergeSort(Institution** headRef) {
+    Institution* head = *headRef;
+    Institution* front;
+    Institution* back;
+
+    if (head == nullptr || head->NextAddress == nullptr) {
+        return;
+    }
+
+    splitList(head, &front, &back);
+
+    mergeSort(&front);
+    mergeSort(&back);
+
+    *headRef = merge(front, back);
+}
+
+void mergeSortUniversities() {
+    // Count the number of institutions
+    int count = 0;
+    Institution* current = head;
+    while (current != nullptr) {
+        count++;
+        current = current->NextAddress;
+    }
+
+    // Start timer
+    auto start = high_resolution_clock::now();
+    // Sort the linked list using MergeSort algorithm
+    mergeSort(&head);
+    // Stop timer
+    auto stop = high_resolution_clock::now();
+    auto duration = duration_cast<microseconds>(stop - start);
+
+    cout << "Time taken by MergeSort: " << duration.count() << " microseconds" << endl;
+
+    // Reassign the tail pointer after sorting
     current = head;
     while (current->NextAddress != nullptr) {
         current->NextAddress->PrevAddress = current;

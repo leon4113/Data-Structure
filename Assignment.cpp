@@ -21,6 +21,8 @@ int main(){
 	while(true){
 		int option;
 
+        addDataFromCSV("data.csv");  // Replace "data.csv" with the actual filename
+
 		cout << "1. Display universities" << endl;
 		cout << "2. sort universities" << endl;
 		cout << "3. search university details" << endl;
@@ -34,7 +36,17 @@ int main(){
 			displayUniversities();
 		}
         else if (option == 2){
-			quicksortUniversities();
+			int input;
+			cout << "1. merge sort" << endl;
+			cout << "2. Quick sort" << endl;
+			cout << "choose a function :" << endl;
+			cin >> input;
+			if(input == 1)
+				mergeSortUniversities();
+			else if(input == 2)
+				quicksortUniversities();
+			else
+				cout << "please enter from the option above!" << endl << endl;
 		}
         else if (option == 3){
 			string searchValue;
