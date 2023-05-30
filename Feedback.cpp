@@ -5,6 +5,11 @@
 
 using namespace std;
 
+//Insert everything except for main into a hpp file
+//Create Ticket object and run .ReadFromFile() function
+//Put Ticket object as argument for the functions in line 296 (admin) and 337 (user)
+//Also insert name into user function
+
 struct TicketNode {
 	string ID;
 	string Author;
@@ -288,6 +293,7 @@ public:
 	}
 };
 
+//For Admin Login, use this function
 void AdmFeedback(Ticket ticket){
 	cout << "Admin Feedback Menu\n" << endl;
 	int choice = 0;
@@ -328,6 +334,7 @@ void AdmFeedback(Ticket ticket){
 	}
 }
 
+//For Customer Login, use this function
 void CusFeedback(string Name, Ticket ticket){
 	cout << "Customer Feedback Menu\n" << endl;
 	int choice = 0;
