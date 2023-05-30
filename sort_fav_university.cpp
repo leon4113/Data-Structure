@@ -1,6 +1,5 @@
 #include <iostream>
 #include <fstream>
-#include <vector>
 #include <algorithm>
 using namespace std;
 
@@ -9,6 +8,7 @@ struct University {
     string name;
     int students;
 
+    University() {}
     University(const string& n, int s) : name(n), students(s) {}
 };
 
@@ -24,27 +24,30 @@ int main() {
         return 1;
     }
 
-    vector<University> universities;
+    const int size = 1400;
+    University universities[size];
+    int index = 0;
     string line;
-    while (getline(inputFile, line)) {
+    while (getline(inputFile, line) && index < size) {
         // Assuming the format of each line is: university_name, number_of_students
         size_t commaPos = line.find(',');
         string name = line.substr(0, commaPos);
         int students = stoi(line.substr(commaPos + 1));
 
-        universities.emplace_back(name, students);
+        universities[index] = University(name, students);
+        index++;
     }
 
     inputFile.close();
 
     // Sort the universities based on the number of students
-    sort(universities.begin(), universities.end(), compareUniversities);
+    sort(universities, universities + index, compareUniversities);
 
     // Print the sorted universities
     cout << "Top 10 Universities:" << endl;
     int count = 0;
-    for (const auto& uni : universities) {
-        cout << uni.name << ": " << uni.students << " students" << endl;
+    for (int i = 0; i < index; i++) {
+        cout << universities[i].name << ": " << universities[i].students << " students" << endl;
         count++;
         if (count >= 10) break;
     }
