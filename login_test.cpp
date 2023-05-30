@@ -18,9 +18,9 @@ private:
     User* head;
 
 public:
-    UserList() : head(nullptr) {}
+    UserList() : head(nullptr) {} 
 
-    ~UserList() {
+    ~UserList() { 
         User* current = head;
         while (current != nullptr) {
             User* temp = current;

@@ -135,8 +135,6 @@ void WriteUsersToFile(UserList& userList, const string& fileName) {
     }
 }
 
-
-
 void Menu(UserList& userList, const string& fileName) {
     int choice;
     string username, password, email;
