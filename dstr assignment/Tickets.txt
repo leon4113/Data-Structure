@@ -1,0 +1,5 @@
+ID,Name,Institution,Query,Reply,Resolution
+T1,John,Harvard University,I need assistance,,Unresolved
+T2,Jane,University of Cambridge,How do I reset my password,,Unresolved
+T3,Mike,University of Cambridge,I am unable to access this uni,Try reloggin,Unresolved
+T4,james1,University of Cambridge,I am unable to access this uni,Try reloggin,Unresolved
