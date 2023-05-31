@@ -167,3 +167,38 @@ void printList(Institution* head) {
     
     cout << endl;
 }
+
+
+// int main() {
+
+//     // Ask the user for the sorting criterion
+//     int choice;
+//     cout << "Enter the sorting criterion: " << endl;
+//     cout << "1. Sort by Academic Reputation Score" << endl;
+//     cout << "2. Sort by Faculty/Student Ratio" << endl;
+//     cout << "3. Sort by Employer Reputation Score" << endl;
+//     cin >> choice;
+    
+//     // Sort the linked list based on the user's choice
+//     switch (choice) {
+//         case 1:
+//             mergeSortByArScore(&head);
+//             break;
+//         case 2:
+//             mergeSortByFsrScore(&head);
+//             break;
+//         case 3:
+//             mergeSortByErScore(&head);
+//             break;
+//         default:
+//             cout << "Invalid choice. Sorting by Academic Reputation Score." << endl;
+//             mergeSortByArScore(&head);
+//             break;
+//     }
+    
+//     // Print the sorted linked list
+//     cout << "Sorted Linked List: " << endl;
+//     printList(head);
+    
+//     return 0;
+// }
