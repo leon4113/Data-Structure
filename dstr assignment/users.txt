@@ -1,2 +1,2 @@
-University,Total_Favourite
-Massachusetts Institute of Technology (MIT),0
+james1, james1password, james@mail.com
+bob2, bobpassword, bob@gmail.com
