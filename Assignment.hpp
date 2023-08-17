@@ -1,29 +1,409 @@
 #include <iostream>
-#include <chrono>
 #include <fstream>
 #include <sstream>
-
+#include <string>
+#include <chrono>
+#include <ctime>
 
 using namespace std;
 using namespace std::chrono;
+
+
+
+struct TicketNode {
+	string ID;
+	string Author;
+	string Institution;
+	string Query;
+	string Reply;
+	bool Resolved;
+	TicketNode* next;
+};
+
+class Ticket {
+private:
+	TicketNode* head;
+public:
+	Ticket(){
+		head = NULL;
+	}	
+	
+	//Ticket edit functions
+	void CreateNewTicket(string Author, string Institution, string Query){
+		TicketNode* newNode = new TicketNode;
+		newNode->Author = Author;
+		newNode->Institution = Institution;
+		newNode->Query = Query;
+		newNode->Reply = "";
+		newNode->Resolved = false;
+		newNode->next = NULL;
+		
+		if(head == NULL){
+			newNode->ID = "T1";
+			head = newNode;
+		}
+		else{
+			int count=2;
+			TicketNode* temp = head;
+			while(temp->next != NULL){
+				temp = temp->next;
+				count++;
+			}
+			stringstream ss;
+			ss << "T" << count;
+			newNode->ID = ss.str();
+			temp->next = newNode;
+		}
+		
+		cout << "Ticket successfully added!" << endl;
+	}
+	void AddReply(string ID, string Reply){
+		TicketNode* temp = head;
+		while(temp->ID!=ID){
+			temp = temp->next;
+		}
+		temp->Reply = Reply;
+		cout << "Reply successfully added!\n";
+	}
+	void MarkAsResolved(string ID){
+		TicketNode* temp = head;
+		while(temp->ID!=ID){
+			temp = temp->next;
+		}
+		temp->Resolved = true;
+		cout << "Ticket marked as resolved!\n";
+	}
+	void AdmEdit(string ID){
+		int choice=0;
+		while(choice!=3){
+			cout << "\nWhat would you like to do with this ticket?" << endl;
+			cout << "1. Add a reply" << endl;
+			cout << "2. Mark as resolved" << endl;
+			cout << "3. Go Back\n\n";
+			cout << "Input here: ";
+			cin >> choice;
+			string Reply;
+			switch (choice) {
+		        case 1:
+		        	cout << "Input a reply: ";
+		        	cin.ignore();
+		        	getline(cin, Reply);
+		        	AddReply(ID, Reply);
+		            break;
+		        case 2:
+		        	MarkAsResolved(ID);
+		            break;
+		        case 3:	
+		            break;
+		        default:
+					cout << "Invalid Input!\n" << endl;
+		            break;
+		    }
+		}
+		cout << endl;
+	}
+	void CusEdit(string ID){
+		int choice=0;
+		while(choice!=2){
+			cout << "\nWhat would you like to do with this ticket?" << endl;
+			cout << "1. Mark as resolved" << endl;
+			cout << "2. Go Back\n\n";
+			cout << "Input here: ";
+			cin >> choice;
+			switch (choice) {
+		        case 1:
+		        	MarkAsResolved(ID);
+		            break;
+		        case 2:
+		            break;
+		        default:
+					cout << "Invalid Input!\n" << endl;
+		            break;
+		    }
+		}
+		cout << endl;
+	}
+	
+	//Ticket display functions
+	void DisplayAll(){
+		if(head == NULL){
+			cout << "No tickets are present!" << endl;
+		}
+		else{
+			TicketNode* temp = head;
+			while(temp != NULL){
+				string status;
+				if(temp->Resolved)
+					status = "Resolved";
+				else
+					status  = "Unresolved";
+				cout << "ID: " << temp->ID << "\nCreated by: " << temp->Author << "\nFor: " << temp->Institution << endl;
+				cout << "Query: " << temp->Query << "\nReply: " <<  temp->Reply << "\nStatus: " << status << "\n";
+				if(temp->next != NULL)
+					cout << endl;
+				temp = temp->next;
+			}
+		}
+	}
+	void DisplayAll(string Name){
+		if(head == NULL){
+			cout << "No tickets are present!" << endl;
+		}
+		else{
+			TicketNode* temp = head;
+			while(temp != NULL){
+				string status;
+				if(temp->Resolved)
+					status = "Resolved";
+				else
+					status  = "Unresolved";
+				if(temp->Author == Name){
+					cout << "ID: " << temp->ID << "\nCreated by: " << temp->Author << "\nFor: " << temp->Institution << endl;
+					cout << "Query: " << temp->Query << "\nReply: " <<  temp->Reply << "\nStatus: " << status << "\n";
+				}
+				if(temp->next != NULL)
+					cout << endl;
+				temp = temp->next;
+			}
+		}
+	}
+	void DisplayUnresolved(){
+		if(head == NULL){
+			cout << "No tickets are present!" << endl;
+		}
+		else{
+			TicketNode* temp = head;
+			while(temp != NULL){
+				if(!temp->Resolved){
+					cout << "ID: " << temp->ID << "\nCreated by: " << temp->Author << "\nFor: " << temp->Institution << endl;
+					cout << "Query: " << temp->Query << "\nReply: " <<  temp->Reply << "\nStatus: Unresolved\n";
+				}
+				if(temp->next != NULL)
+					cout << endl;
+				temp = temp->next;
+			}
+		}
+	}
+	void DisplayUnresolved(string Name){
+		if(head == NULL){
+			cout << "No tickets are present!" << endl;
+		}
+		else{
+			TicketNode* temp = head;
+			while(temp != NULL){
+				if(!temp->Resolved && temp->Author == Name){
+					cout << "ID: " << temp->ID << "\nCreated by: " << temp->Author << "\nFor: " << temp->Institution << endl;
+					cout << "Query: " << temp->Query << "\nReply: " <<  temp->Reply << "\nStatus: Unresolved\n";
+				}
+				if(temp->next != NULL)
+					cout << endl;
+				temp = temp->next;
+			}
+		}
+	}
+	bool DisplayTicket(string ID){
+		TicketNode* temp = head;
+		bool found=false;
+		while(temp!=NULL){
+			if(temp->ID == ID){
+				string status;
+				if(temp->Resolved)
+					status = "Resolved";
+				else
+					status  = "Unresolved";
+				cout << "ID: " << temp->ID << "\nCreated by: " << temp->Author << "\nFor: " << temp->Institution << endl;
+				cout << "Query: " << temp->Query << "\nReply: " <<  temp->Reply << "\nStatus: " << status << "";
+				found=true;
+				break;
+			}
+			temp = temp->next;
+		}
+		if(!found)
+			cout << "Ticket does not exist\n";
+		return found;	
+	}
+};
+
+void AdmFeedback(Ticket ticket){
+	cout << "Admin Feedback Menu\n" << endl;
+	int choice = 0;
+	while (choice!=4){
+		cout << "What would you like to do?" << endl;
+		cout << "1. Select a ticket" << endl;
+		cout << "2. Show all tickets" << endl;
+		cout << "3. Show unresolved tickets" << endl;
+		cout << "4. Go back\n" << endl;
+		cout << "Input here: ";
+		cin >> choice;
+		cout << endl;
+		string ID;
+		switch(choice){
+			case 1:				
+				bool exists;
+				cout << "Select a ticket: ";
+				cin >> ID;
+				exists = ticket.DisplayTicket(ID);
+				if(exists){
+					cout << endl;
+					ticket.AdmEdit(ID);
+				}
+				break;
+			case 2:
+				ticket.DisplayAll();
+				break;
+			case 3:
+				ticket.DisplayUnresolved();
+				break;
+			case 4:
+				break;
+			default:
+				cout << "Invalid input!\n\n";
+				break; 
+		}
+		cout << endl;
+	}
+}
+
+void CusFeedback(string Name, Ticket ticket){
+	cout << "Customer Feedback Menu\n" << endl;
+	int choice = 0;
+	while (choice!=5){
+		cout << "What would you like to do?" << endl;
+		cout << "1. Select a ticket" << endl;
+		cout << "2. Show all tickets" << endl;
+		cout << "3. Show unresolved tickets" << endl;
+		cout << "4. Make new ticket" << endl;
+		cout << "5. Go back\n" << endl;
+		cout << "Input here: ";
+		cin >> choice;
+		cout << endl;
+		string ID;
+		if (choice == 1) {
+		    bool exists;
+		    cout << "Select a ticket: ";
+		    cin >> ID;
+		    exists = ticket.DisplayTicket(ID);
+		    if (exists) {
+		        cout << endl;
+		        ticket.CusEdit(ID);
+		    }
+		}
+		else if (choice == 2) {
+		    ticket.DisplayAll(Name);
+		}
+		else if (choice == 3) {
+		    ticket.DisplayUnresolved(Name);
+		}
+		else if (choice == 4) {
+		    string Institution, Query;
+		    cout << "Insert institution name: ";
+		    cin.ignore();
+		    getline(cin, Institution);
+		    cout << "Insert your query: ";
+		    getline(cin, Query);
+		    ticket.CreateNewTicket(Name, Institution, Query);
+		}
+		else if (choice == 5) {
+		    // Do nothing
+		}
+		else {
+		    cout << "Invalid input!\n\n";
+		}
+		cout << endl;
+	}
+}
+
 
 struct user{
 	string username;
 	string password;
 	string email;
-	string address;
 	user* NextAddress;
-}*usHead;
 
-user* createNewUserNode(string username, string password, string email, string address){
-    user* newnode = new user;
-    newnode -> username = username;
-	newnode -> password = password;
-	newnode -> email = email;
-	newnode -> address = address;
-    newnode-> NextAddress = NULL;
-    return newnode;
-}
+	user(){};
+};
+
+class UserList {
+public:
+    user* usHead;
+    UserList() {usHead = nullptr;}
+
+    ~UserList() {
+        user* current = usHead;
+        while (current != nullptr) {
+            user* temp = current;
+            current = current->NextAddress;
+            delete temp;
+        }
+    }
+
+    user* createNewUserNode(string username, string password, string email){
+		user* newnode = new user;
+		newnode -> username = username;
+		newnode -> password = password;
+		newnode -> email = email;
+		newnode-> NextAddress = NULL;
+		return newnode;
+	}
+
+	void InsertIntoStartofUserList(user* newnode){
+		if (usHead == NULL)
+		{
+			usHead  = newnode;
+		}
+		else
+		{
+			newnode -> NextAddress = usHead;
+			usHead = newnode;
+		}	
+	}
+
+    // Function to display all users in the linked list
+    void DisplayUsers() {
+        if (usHead == nullptr) {
+            cout << "No users found in the list." << endl;
+        }
+        else {
+            user* temp = usHead;
+            while (temp != nullptr) {
+                cout << "Username: " << temp->username << endl;
+                cout << "Password: " << temp->password << endl;
+                cout << "Email: " << temp->email << endl;
+                //cout << "Last Login Date: " << system_clock::to_time_t(temp->lastLoginDate) << endl;
+                cout << endl;
+                temp = temp->NextAddress;
+            }
+        }
+    }
+
+    bool login(const string& username, const string& password) {
+        user* current = usHead;
+        while (current != nullptr) {
+            if (username == current->username && password == current->password) {
+                return true;
+            }
+            current = current->NextAddress;
+        }
+        return false;
+    }
+
+	void InsertIntoStartofUserList(user* newnode){
+	if (usHead == NULL)
+	{
+		usHead  = newnode;
+	}
+	else
+	{
+		newnode -> NextAddress = usHead;
+		usHead = newnode;
+	}	
+	cout<<"succesfully registered"<<endl;
+
+	}
+};
+
+
+
 
 struct Institution{
 	int Rank;
@@ -108,17 +488,7 @@ void InsertIntoStartofList(Institution* newnode){
 	}	
 }
 
-void InsertIntoStartofUserList(user* newnode){
-	if (usHead == NULL)
-	{
-		usHead  = newnode;
-	}
-	else
-	{
-		newnode -> NextAddress = usHead;
-		usHead = newnode;
-	}	
-}
+
 
 void DeleteStartofList(){
 	Institution* temp = head;
@@ -150,75 +520,6 @@ void DeleteAt(int index){
 }
 
 
-void addDataFromCSV(const string& filename) {
-    ifstream file(filename);
-    if (!file.is_open()) {
-        cout << "Error opening file: " << filename << endl;
-        return;
-    }
-
-    string line;
-    getline(file, line);  // Read and discard the header line
-
-    while (getline(file, line)) {
-        stringstream ss(line);
-        string token;
-
-        // Read the CSV values
-        int rank;
-        string name, locationCode, location;
-        double arScore, erScore, fsrScore, cpfScore, ifrScore, isrScore, irnScore, gerScore, scoreScaled;
-        string arRank, erRank, fsrRank, cpfRank, ifrRank, isrRank, irnRank, gerRank;
-
-        getline(ss, token, ',');
-        rank = stoi(token);
-        getline(ss, name, ',');
-        getline(ss, locationCode, ',');
-        getline(ss, location, ',');
-        getline(ss, token, ',');
-        arScore = stod(token);
-        getline(ss, arRank, ',');
-        getline(ss, token, ',');
-        erScore = stod(token);
-        getline(ss, erRank, ',');
-        getline(ss, token, ',');
-        fsrScore = stod(token);
-        getline(ss, fsrRank, ',');
-        getline(ss, token, ',');
-        cpfScore = stod(token);
-        getline(ss, cpfRank, ',');
-        getline(ss, token, ',');
-        ifrScore = stod(token);
-        getline(ss, ifrRank, ',');
-        getline(ss, token, ',');
-        isrScore = stod(token);
-        getline(ss, isrRank, ',');
-        getline(ss, token, ',');
-        irnScore = stod(token);
-        getline(ss, irnRank, ',');
-        getline(ss, token, ',');
-        gerScore = stod(token);
-        getline(ss, gerRank, ',');
-        getline(ss, token);
-        scoreScaled = stod(token);
-
-        // Create a new node with the read values
-        Institution* newNode = CreateNewNode(rank, name, locationCode, location, arScore, arRank, erScore, erRank,
-            fsrScore, fsrRank, cpfScore, cpfRank, ifrScore, ifrRank, isrScore, isrRank,
-            irnScore, irnRank, gerScore, gerRank, scoreScaled);
-
-        // Insert the new node into the doubly linked list
-        InsertIntoEndofList(newNode);
-    }
-
-    file.close();
-}
-
-
-void displayUniversities(){
-
-}
-
 //linear search
 Institution* linearSearch( string searchValue){
 	Institution * current = head;
@@ -243,12 +544,12 @@ Institution* bidirectionalSearch(string searchValue){
 	forwardPtr != backwardPtr && forwardPtr->PrevAddress != backwardPtr){
 		// Check if forward pointer has reached the target
 		if (forwardPtr->Name == searchValue) {
-            return forwardPtr;
+			return forwardPtr;
         }
 
         // Check if backward pointer has reached the target
         if (backwardPtr->Name == searchValue) {
-            return backwardPtr;
+			return backwardPtr;
         }
 
         forwardPtr = forwardPtr->NextAddress;
@@ -257,6 +558,38 @@ Institution* bidirectionalSearch(string searchValue){
 
 	//not found
 	return NULL;
+}
+
+void partialSearch( string searchValue){
+	Institution * current = head;
+	
+	while(current->NextAddress != NULL){
+		if(current->Name.find(searchValue) != string::npos){
+			cout<<endl;
+			cout << "Rank: " << current->Rank << endl;
+			cout << "Name: " << current->Name << endl;
+			cout << "LocationCode: " << current->LocationCode << endl;
+			cout << "Location: " << current->Location << endl;
+			cout << "ArScore: " << current->ArScore << endl;
+			cout << "ArScore: " << current->ArScore << endl;
+			cout << "ErScore: " << current->ErScore << endl;
+			cout << "ErRank: " << current->ErRank << endl;
+			cout << "FsrScore: " << current->FsrScore << endl;
+			cout << "FsrRank: " << current->FsrRank << endl;
+			cout << "CpfScore: " << current->CpfScore << endl;
+			cout << "CpfRank: " << current->CpfRank << endl;
+			cout << "IfrScore: " << current->IfrScore << endl;
+			cout << "IfrRank: " << current->IfrRank << endl;
+			cout << "IsrScore: " << current->IsrScore << endl;
+			cout << "IsrRank: " << current->IsrRank << endl;
+			cout << "IrnScore: " << current->IrnScore << endl;
+			cout << "IrnRank: " << current->IrnRank << endl;
+			cout << "GerScore: " << current->GerScore << endl;
+			cout << "GerRank: " << current->GerRank << endl;
+			cout << "ScoreScaled: " << current->ScoreScaled << endl;
+		}
+		current = current-> NextAddress;
+	}
 }
 
 void customerMenu(){
@@ -297,146 +630,55 @@ void customerMenu(){
 }
 
 void registerUser(string username, string password, string email, string address) {
-    
+	
 }
 
-Institution* partition(Institution* head, Institution* tail) {
-    string pivot = tail->Name;
-    Institution* i = head->PrevAddress;
-
-    for (Institution* j = head; j != tail; j = j->NextAddress) {
-        if (j->Name <= pivot) {
-            i = (i == nullptr) ? head : i->NextAddress;
-            swap(i->Name, j->Name);
-        }
-    }
-
-    i = (i == nullptr) ? head : i->NextAddress;
-    swap(i->Name, tail->Name);
-    return i;
-}
-
-void quicksort(Institution* head, Institution* tail) {
-    if (tail != nullptr && head != tail && head != tail->NextAddress) {
-        Institution* pivot = partition(head, tail);
-
-        quicksort(head, pivot->PrevAddress);
-        quicksort(pivot->NextAddress, tail);
-    }
-}
-
-void quicksortUniversities() {
-    // Count the number of institutions
-    int count = 0;
+void displayUniversities() {
     Institution* current = head;
+	int count = 0;
+
     while (current != nullptr) {
-        count++;
+        // Print the information of the current node
+        cout<<endl;
+		cout << "Rank: " << current->Rank << endl;
+        cout << "Name: " << current->Name << endl;
+        cout << "Location Code: " << current->LocationCode << endl;
+        cout << "Location: " << current->Location << endl;
+        cout << "Ar Score: " << current->ArScore << endl;
+        cout << "Ar Rank: " << current->ArRank << endl;
+        cout << "Er Score: " << current->ErScore << endl;
+        cout << "Er Rank: " << current->ErRank << endl;
+        cout << "Fsr Score: " << current->FsrScore << endl;
+        cout << "Fsr Rank: " << current->FsrRank << endl;
+        cout << "Cpf Score: " << current->CpfScore << endl;
+        cout << "Cpf Rank: " << current->CpfRank << endl;
+        cout << "Ifr Score: " << current->IfrScore << endl;
+        cout << "Ifr Rank: " << current->IfrRank << endl;
+        cout << "Isr Score: " << current->IsrScore << endl;
+        cout << "Isr Rank: " << current->IsrRank << endl;
+        cout << "Irn Score: " << current->IrnScore << endl;
+        cout << "Irn Rank: " << current->IrnRank << endl;
+        cout << "Ger Score: " << current->GerScore << endl;
+        cout << "Ger Rank: " << current->GerRank << endl;
+        cout << "Score Scaled: " << current->ScoreScaled << endl<<endl;
+        
+		count++;
+        // Move to the next node
         current = current->NextAddress;
-    }
 
-    // Start timer
-    auto start = high_resolution_clock::now();
-    // Sort the linked list using QuickSort algorithm
-    quicksort(head, tail);
-    // Stop timer
-    auto stop = high_resolution_clock::now();
-    auto duration = duration_cast<microseconds>(stop - start);
-
-    cout << "Time taken by QuickSort: " << duration.count() << " microseconds" << endl;
-
-    // Reassign the head and tail pointers after sorting
-    current = head;
-    while (current->NextAddress != nullptr) {
-        current->NextAddress->PrevAddress = current;
-        current = current->NextAddress;
-    }
-    tail = current;
-}
-
-
-Institution* merge(Institution* head1, Institution* head2) {
-    if (head1 == nullptr) {
-        return head2;
-    }
-    if (head2 == nullptr) {
-        return head1;
-    }
-
-    Institution* result;
-    if (head1->Name <= head2->Name) {
-        result = head1;
-        result->NextAddress = merge(head1->NextAddress, head2);
-        result->NextAddress->PrevAddress = result;
-    } else {
-        result = head2;
-        result->NextAddress = merge(head1, head2->NextAddress);
-        result->NextAddress->PrevAddress = result;
-    }
-
-    return result;
-}
-
-void splitList(Institution* head, Institution** front, Institution** back) {
-    Institution* slow = head;
-    Institution* fast = head->NextAddress;
-
-    while (fast != nullptr) {
-        fast = fast->NextAddress;
-        if (fast != nullptr) {
-            slow = slow->NextAddress;
-            fast = fast->NextAddress;
-        }
-    }
-
-    *front = head;
-    *back = slow->NextAddress;
-    slow->NextAddress = nullptr;
-    if (*back != nullptr) {
-        (*back)->PrevAddress = nullptr;
+		if (count >= 20){
+			string ans;
+			cout<<"do you want to continue displaying? ";
+			cout<<"input no to end, press anything to continue :";
+			cin>> ans;
+			if (ans == "no"){
+				return;
+			}
+			else{
+				count = 0;
+			}
+		}
     }
 }
 
-void mergeSort(Institution** headRef) {
-    Institution* head = *headRef;
-    Institution* front;
-    Institution* back;
 
-    if (head == nullptr || head->NextAddress == nullptr) {
-        return;
-    }
-
-    splitList(head, &front, &back);
-
-    mergeSort(&front);
-    mergeSort(&back);
-
-    *headRef = merge(front, back);
-}
-
-void mergeSortUniversities() {
-    // Count the number of institutions
-    int count = 0;
-    Institution* current = head;
-    while (current != nullptr) {
-        count++;
-        current = current->NextAddress;
-    }
-
-    // Start timer
-    auto start = high_resolution_clock::now();
-    // Sort the linked list using MergeSort algorithm
-    mergeSort(&head);
-    // Stop timer
-    auto stop = high_resolution_clock::now();
-    auto duration = duration_cast<microseconds>(stop - start);
-
-    cout << "Time taken by MergeSort: " << duration.count() << " microseconds" << endl;
-
-    // Reassign the tail pointer after sorting
-    current = head;
-    while (current->NextAddress != nullptr) {
-        current->NextAddress->PrevAddress = current;
-        current = current->NextAddress;
-    }
-    tail = current;
-}
