@@ -33,7 +33,7 @@ void FavoriteMenu(){
 		switch(choice){
 			case 1:
 				cout << "Input the name of the university to mark as favorite: ";
-				cin.ignore();
+				cin.ignore(); // Ignore the newline character from previous input
 				getline(cin, uniname);
 				AddFavourite(uniname);
 				break;
@@ -162,8 +162,6 @@ void Admin_menu() {
         delete temp;
     }
 }
-
-
 
 void login(const string& username, const string& password) {
     if(username == "admin" && password == "admin"){
