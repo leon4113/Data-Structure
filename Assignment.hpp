@@ -8,11 +8,6 @@ using namespace std;
 using namespace std::chrono;
 
 
-
-// USER CLASS
-// ||||||
-// VVVVVV
-
 struct user{
 	string username;
 	string password;
@@ -140,11 +135,6 @@ void deleteUserOption(user*& head) {
         cout << "User '" << usernameToDelete << "' not found." << endl;
     }
 }
-
-
-// INSTITUTION CLASS
-// ||||||
-// VVVVVV
 
 struct Institution{
 	int Rank;
@@ -707,10 +697,6 @@ void printList(Institution* head) {
 
 
 
-// TICKET CLASS
-// ||||||
-// VVVVVV
-
 struct TicketNode {
 	string ID;
 	string Author;
@@ -1108,12 +1094,6 @@ void CusFeedback(string Name, Ticket ticket){
 	}
 }
 
-
-
-
-// Favorite CLASS
-// ||||||
-// VVVVVV
 
 struct Favorite {
     string name;

@@ -41,7 +41,6 @@ void FavoriteMenu(){
 				break;
 			default:
 				cout << "Invalid Input!";
-				break;
 		}
 	}
 	cout << endl;
